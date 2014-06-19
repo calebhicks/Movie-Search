@@ -10,6 +10,8 @@
 #import "MSResponseTableViewDataSource.h"
 #import "MSMovieDetailViewController.h"
 
+#import "MovieController.h"
+
 @interface MSViewController () <UITableViewDelegate>
 
 @property (nonatomic, strong) IBOutlet UITextField *searchField;
@@ -34,6 +36,18 @@
 
 - (IBAction)search:(id)sender {
 
+    [[MovieController sharedInstance] searchForMoviesWithNameString:self.searchField.text completion:^(BOOL success) {
+        if (success) {
+            [self.tableView reloadData];
+        }else{
+            [[[UIAlertView alloc]initWithTitle:@"Failed to search" message:@"The request failed" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        }
+    }];
+    
+    [self.searchField resignFirstResponder];
+    
+    [self performSelector:@selector(reloadTableView) withObject:nil afterDelay:4];
+    
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -41,7 +55,13 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     MSMovieDetailViewController *detailViewController = [MSMovieDetailViewController new];
+    detailViewController.movie = [MovieController sharedInstance].resultMovies[indexPath.row];
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
+
+- (void)reloadTableView{
+    [self.tableView reloadData];
+}
+
 
 @end

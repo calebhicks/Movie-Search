@@ -11,6 +11,7 @@
 @interface MovieController : NSObject
 
 + (MovieController *)sharedInstance;
+-(void)searchForMoviesWithNameString:(NSString *)nameString completion:(void (^)(BOOL success))completion;
 
 @property (nonatomic, strong) NSArray *resultMovies;
 
